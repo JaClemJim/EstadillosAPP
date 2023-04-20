@@ -1,0 +1,44 @@
+{
+    "num_employees":12,
+    "num_hours": 0,
+    "name_AD":"LEMD_DCL",
+    "fileTWR":"datosDependencias1.csv",
+    "fileTrafico":"datos.csv",
+    "separadorcolumnas":";",
+    "id_shift":1,
+    "num_day":1,
+    "num_month":7,
+    
+    "block_length": 5,
+    "shifts": ["D", "T"],
+    "label_hours":["00 15 30 45 "],
+    "fixed_assignments": [
+       
+    ],
+    "requests": [  
+    ],
+    "shift_constraints": [
+        [0, 5, 35, 100, 120, 120, 10],
+        [1, 5, 35, 10, 115, 115, 10]
+    ],
+    "daily_sum_constraints": [
+        
+    ],
+    "penalized_transitions": [
+       
+    ],
+    "min_daily_sum_off":0.25,
+    "demand_interval_length":15,
+    "hourly_cover_demands": [
+        
+    ],        
+    
+    "excess_cover_penalties": [10],
+    "evenly_penalties": [10, 10],
+
+
+    "parametroControl":7,
+    "max_time_in_seconds" : 120.0,
+    "match_full_demand":1,
+    "even_shift_tolerance":1
+}
