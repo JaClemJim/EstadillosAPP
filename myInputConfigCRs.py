@@ -11,7 +11,7 @@ PARÁMETROS DE LA SIMULACIÓN
 """
 
 class MyConfig:
-    def __init__(self,file='inputconfigCRs.json'):
+    def __init__(self,file='inputconfigCRs.json',):
         print(file)
         with open(file) as f:
             inputdata = json.load(f)

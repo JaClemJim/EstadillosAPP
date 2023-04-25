@@ -14,26 +14,16 @@
 
 from __future__ import print_function
 
-import argparse
 # módulos lectura de datos entrada
 import myInputConfigCRs # datos json configuración cálculos OR
 import myInputCRs # datos csv escenario (turnos, posiciones/capacidad, demanda)
-# import myoutputCRs # escribir resultados en CSV
+import myoutputCRs # escribir resultados en CSV
 import math # ceil, floor
 import pandas as pd
 
 from ortools.sat.python import cp_model
 
 from google.protobuf import text_format
-
-PARSER = argparse.ArgumentParser()
-PARSER.add_argument(
-    '--output_proto',
-    default="",
-    help='Output file to write the cp_model'
-    'proto to.')
-PARSER.add_argument('--params', default="", help='Sat solver parameters.')
-
 
 def negated_bounded_span(works, start, length):
     """Filters an isolated sub-sequence of variables assined to True.
@@ -186,7 +176,7 @@ def add_soft_sum_constraint(model, works, hard_min, soft_min, min_cost,
 
 
 #def solve_shift_scheduling(params, output_proto):
-def solve_shift_scheduling(params, output_proto):    
+def solve_shift_scheduling(lista):    
     """Solves the shift scheduling problem."""
     
      #escenario
@@ -198,8 +188,8 @@ def solve_shift_scheduling(params, output_proto):
 #    myAD='LEMD_DCL'
 #    myturno=0
 #    mydiames=15 #SEGÚN FORMATO FICHERO TRAFICO
-    myAD=mC.name_AD
-    myturno=mC.id_shift
+    myAD=lista[0]
+    myturno=lista[2]
     mydiames=mC.num_day
     mynummes=mC.num_month
     myfileTWR=mC.fileTWR
@@ -212,7 +202,7 @@ def solve_shift_scheduling(params, output_proto):
         #si 0 lee el turno
         mC.num_hours=mE.duracionturnos.iloc[myturno]
     
-    num_employees=mC.num_employees # 3
+    num_employees=lista[1]
     
     print(myAD)
     print("shift:",myturno)
@@ -222,11 +212,11 @@ def solve_shift_scheduling(params, output_proto):
     num_hours=mC.num_hours # 8 hours = duración turno
     print("num_hours",num_hours)
         
-    demand_interval_length=mC.demand_interval_length
+    demand_interval_length=lista[4]
     intervals_per_hour=int(60/demand_interval_length)
     num_demandintervals=int(num_hours*intervals_per_hour)
     
-    block_length=mC.block_length # 5  minutes
+    block_length=lista[3] # 5  minutes
     blocks_per_hour = int(60/block_length) # equivale a days/week=7
     blocks_per_interval=int(demand_interval_length/block_length)
     num_blocks = int(num_hours * blocks_per_hour)    # bloques (ej. 15 minutos)
@@ -587,75 +577,12 @@ def solve_shift_scheduling(params, output_proto):
                         model.AddElement(worked, mycap_pos, capacity) 
                         name = 'excess_traf_demand(shift=%i, block=%i)' % (
                             s, timeblock)
-###                        
-#                        if match_full_demand:
-#                            # ajusta exactamente a la demanda (sin importar descanso)
-#                            param_mindemand=0
-#                        else:
-#                            # permite menos posiciones que demanda
-#                            param_mindemand=-traffic_demand
-#                    
-##                        # Demanda como Variable
-##                        excess_demand= model.NewIntVar(
-##                                param_mindemand,
-##                                traffic_demand, 
-##                                name)
-##                        model.Add(excess_demand == traffic_demand - capacity)
-##                        obj_int_vars.append(excess_demand)
-##                        obj_int_coeffs.append(over_penalty)
-##     
-#                         # Demanda como MaxEquality
-#                         #solución más desequilibrada en turnos ¿?
-#                         # ajusta a demanda exactamente
-#                        excess_demand= model.NewIntVar(
-#                                 - maxcap, 
-#                                 traffic_demand,
-#                                 name)
-#                         #variable auxiliar para AddMaxEquality
-#                        diff_traf = model.NewIntVar(
-#                                 - maxcap, 
-#                                 traffic_demand,'')
-#                        model.Add(diff_traf==traffic_demand-capacity)
-#                         # creates a variable obj_var whose value is 
-#                         # the maximum of the variables from the list
-#                        model.AddMaxEquality(
-#                                 excess_demand,
-#                                 [valorCero, diff_traf])
-#                        obj_int_vars.append(excess_demand)
-#                        obj_int_coeffs.append(over_penalty)
-
-                        # Delay
-                        #PRUEBA
-#                        excess_demand = model.NewIntVar(0,traffic_demand,
-#                                         name)
-#                        demoras.append(excess_demand)
-#                        if timeblock>0:
-#                            vuelosdemorados=demoras[timeblock-1]
-#                        else:
-#                            vuelosdemorados=valorCero
-#                            
-#                        surplusCap=model.NewIntVar(-maxcap,traffic_demand,'')
-#                        model.Add(surplusCap == vuelosdemorados -
-#                                  (capacity - traffic_demand))
-#                        
-#                        model.AddMaxEquality(excess_demand,
-#                                             [valorCero,surplusCap])
-#                        
-#                        obj_int_vars.append(excess_demand)
-#                        obj_int_coeffs.append(over_penalty)
-
-    #pendiente: print todas las soluciones
     # Objective
     model.Minimize(
         sum(obj_bool_vars[i] * obj_bool_coeffs[i]
             for i in range(len(obj_bool_vars)))
         + sum(obj_int_vars[i] * obj_int_coeffs[i]
               for i in range(len(obj_int_vars))))
-
-    if output_proto:
-        print('Writing proto to %s' % output_proto)
-        with open(output_proto, 'w') as text_file:
-            text_file.write(str(model))
 
     # Solve the model.
     solver = cp_model.CpSolver()
@@ -664,8 +591,7 @@ def solve_shift_scheduling(params, output_proto):
     # Specify the number of parallel workers to use during search.
     solver.parameters.num_search_workers = num_employees #8
     
-    if params:
-        text_format.Merge(params, solver.parameters)
+
     solution_printer = cp_model.ObjectiveSolutionPrinter()
     status = solver.SolveWithSolutionCallback(model, solution_printer)
 
@@ -683,13 +609,13 @@ def solve_shift_scheduling(params, output_proto):
     # Print solution.
     #PENDIENTE: PASAR A SOLUTION CALLBACK
     if status == cp_model.OPTIMAL or status == cp_model.FEASIBLE:
-#         myOutput=myoutputCRs.MyOutput(myAD + ".csv")
-        print()
-#        header = ' '
-#        for h in range(num_hours):
-#            header += myheader
-#        print(header)
-        # myOutput=myoutputCRs.MyOutput(myAD + "_all.csv") #csv de salida
+        # myOutput=myoutputCRs.MyOutput(myAD + ".csv")
+        # print()
+        # header = ' '
+        # for h in range(num_hours):
+        #     header += myheader
+        # print(header)
+        myOutput=myoutputCRs.MyOutput(myAD + "_all.csv") #csv de salida
         
         #-----------------
         #se cambia el formato de salida del csv para simplificar su procesado con excel
@@ -713,13 +639,13 @@ def solve_shift_scheduling(params, output_proto):
         straux=",".join([str(int(x)) if x != ' ' else x for x in listaposiciones])
         
         #print('POS_DEMAND: ', strposdemanda)
-        # myOutput.añadirResultados('POS_DEMAND:,' + straux + ',') # añade a la cadena
+        myOutput.añadirResultados('POS_DEMAND:,' + straux + ',') # añade a la cadena
         ouput.append(straux)
 
         #straux=",".join([str(int(x)) for x in listademanda])
         straux=",".join([str(int(x)) if x != ' ' else x for x in listademanda])
         #print('POS_DEMAND: ', strposdemanda)
-        # myOutput.añadirResultados('TRAFFIC_DEMAND:,' + straux+ ',') # añade cadena
+        myOutput.añadirResultados('TRAFFIC_DEMAND:,' + straux+ ',') # añade cadena
         ouput.append(straux)
 
         for e in range(num_employees):
@@ -730,7 +656,7 @@ def solve_shift_scheduling(params, output_proto):
                         schedule += shifts[s] + ','
             fila='worker%i:,%s' % (e, schedule)
             print(fila)
-            # myOutput.añadirResultados(fila) # añade a la cadena
+            myOutput.añadirResultados(fila) # añade a la cadena
             ouput.append(fila)
         
         
@@ -769,37 +695,14 @@ def solve_shift_scheduling(params, output_proto):
         print()
         print(tipAssessor)
         ouput.append(tipAssessor)
-        #myOutput.añadirResultados(tipAssessor)
-        # myOutput.volcarResultados(overwrite=True) # sobreescribe archivo
+        myOutput.añadirResultados(tipAssessor)
+        myOutput.volcarResultados(overwrite=True) # sobreescribe archivo
         
         Output = pd.DataFrame(ouput)
 
+    
+
     print()
     print(solver.ResponseStats())
+    return Output
 
-    
-    
-# class VarArraySolutionPrinter(cp_model.CpSolverSolutionCallback):
-#     """Print intermediate solutions."""
-
-#     def __init__(self, variables):
-#         cp_model.CpSolverSolutionCallback.__init__(self)
-#         self.__variables = variables
-#         self.__solution_count = 0
-
-#     def on_solution_callback(self):
-#         self.__solution_count += 1
-#         for v in self.__variables:
-#             print('%s=%i' % (v, self.Value(v)), end=' ')
-#         print()
-
-#     def solution_count(self):
-#         return self.__solution_count
-
-# def main(args):
-#     """Main."""
-#     solve_shift_scheduling(args.params, args.output_proto)
-
-
-# if __name__ == '__main__':
-#     main(PARSER.parse_args())
