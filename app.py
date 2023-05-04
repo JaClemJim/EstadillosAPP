@@ -111,86 +111,89 @@ boton1 = st.button("Click para calcular")
 # st.write("boton:", boton1)
 
 if boton1:
-    lista = load_data(list_input)
-    time = demanda #minutos
-    t_bloque  = bloque #minutos
+    try:
+        lista = load_data(list_input)
+        time = demanda #minutos
+        t_bloque  = bloque #minutos
 
-    dfs = [pd.DataFrame(line.split(',')).transpose() for line in lista]
-    df = pd.concat(dfs).reset_index(drop=True).iloc[:, 0:-1]
+        dfs = [pd.DataFrame(line.split(',')).transpose() for line in lista]
+        df = pd.concat(dfs).reset_index(drop=True).iloc[:, 0:-1]
 
-    grupo = int(time/t_bloque)
+        grupo = int(time/t_bloque)
 
-    lista1 = [i for i in list(filter(lambda x: x != ' ', df.iloc[0,1:])) for j in range(grupo)]
-    lista2 = [i for i in list(filter(lambda x: x != ' ', df.iloc[1,1:])) for j in range(grupo)]
+        lista1 = [i for i in list(filter(lambda x: x != ' ', df.iloc[0,1:])) for j in range(grupo)]
+        lista2 = [i for i in list(filter(lambda x: x != ' ', df.iloc[1,1:])) for j in range(grupo)]
 
-    if len(lista1) > (df.shape[1] - 1):
-        a = len(lista1) - (df.shape[1] - 1)
-        lista1 = lista1[:-a]
-        lista2 = lista2[:-a]
+        if len(lista1) > (df.shape[1] - 1):
+            a = len(lista1) - (df.shape[1] - 1)
+            lista1 = lista1[:-a]
+            lista2 = lista2[:-a]
 
-    df.loc[0, 1:] = lista1
-    df.loc[1, 1:] = lista2 
+        df.loc[0, 1:] = lista1
+        df.loc[1, 1:] = lista2 
 
-    df.loc[:1, 1:]=df.loc[:1, 1:].astype('int')
+        df.loc[:1, 1:]=df.loc[:1, 1:].astype('int')
 
-    durations = []
-    for index, row in df.iterrows():
-        duration = 0
-        for value in row.values:
-            if value == 'T':
-                duration += 1
-        durations.append(duration)
+        durations = []
+        for index, row in df.iterrows():
+            duration = 0
+            for value in row.values:
+                if value == 'T':
+                    duration += 1
+            durations.append(duration)
 
-    porcentaje = [(i/(len(df.columns)-1))*100 for i in durations]
-    duration = [(i*t_bloque)/60 for i in durations]
+        porcentaje = [(i/(len(df.columns)-1))*100 for i in durations]
+        duration = [(i*t_bloque)/60 for i in durations]
 
-    df.insert(1, 'tiempo', duration)
-    df.insert(2, 'porcentaje', porcentaje)
-    
-    df2 = df.iloc[2:,3:]
-    count_dicc = {}
-
-    for index, row in df2.iterrows():
-        count_list = []
-        current_item = row.values[0]
-        current_count = t_bloque
+        df.insert(1, 'tiempo', duration)
+        df.insert(2, 'porcentaje', porcentaje)
         
-        for item in row.values[1:]:
-            if item == current_item:
-                current_count += t_bloque
-            else:
-                last_item = current_item
-                count_list.append((last_item+':', current_count))
-                current_item = item
-                current_count = t_bloque
+        df2 = df.iloc[2:,3:]
+        count_dicc = {}
+
+        for index, row in df2.iterrows():
+            count_list = []
+            current_item = row.values[0]
+            current_count = t_bloque
+            
+            for item in row.values[1:]:
+                if item == current_item:
+                    current_count += t_bloque
+                else:
+                    last_item = current_item
+                    count_list.append((last_item+':', current_count))
+                    current_item = item
+                    current_count = t_bloque
+            
+            count_list.append(((item+':', current_count)))
+            
+            count_dicc['worker'+str(index-2)] = count_list
+            
+        longitud_maxima = max(map(len, count_dicc.values()))
+
+        for key in count_dicc:
+            lista = count_dicc[key]
+            while len(lista) < longitud_maxima:
+                lista.append(None)
         
-        count_list.append(((item+':', current_count)))
-        
-        count_dicc['worker'+str(index-2)] = count_list
-        
-    longitud_maxima = max(map(len, count_dicc.values()))
+        df3 = pd.DataFrame(count_dicc).transpose().reset_index().replace({None: ''}).astype('str')
 
-    for key in count_dicc:
-        lista = count_dicc[key]
-        while len(lista) < longitud_maxima:
-            lista.append(None)
-    
-    df3 = pd.DataFrame(count_dicc).transpose().reset_index().replace({None: ''}).astype('str')
+        st.write(df3)
+        # st.write(df)
 
-    st.write(df3)
-    # st.write(df)
+        transf(df,aerop)
 
-    transf(df,aerop)
+        nombre = aerop+'.xlsx'
 
-    nombre = aerop+'.xlsx'
+        with open(nombre, 'rb') as f:
+            estadillo = f.read()
 
-    with open(nombre, 'rb') as f:
-        estadillo = f.read()
+        b64 = base64.b64encode(estadillo).decode()
 
-    b64 = base64.b64encode(estadillo).decode()
-
-    href = f'<a href="data:application/estadillo;base64,{b64}" download="{nombre}">Descargar Excel</a>'
-    st.markdown(href, unsafe_allow_html=True)
+        href = f'<a href="data:application/estadillo;base64,{b64}" download="{nombre}">Descargar Excel</a>'
+        st.markdown(href, unsafe_allow_html=True)
+    except: 
+        st.error('Ha habido un error de cálculo, cambia los datos de entrada')
 
 
 
