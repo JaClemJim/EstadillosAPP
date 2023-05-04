@@ -22,7 +22,7 @@ st.markdown("""
 ######
 # Carga de los resultados en cache
 ######
-@st.cache_data
+@st.cache
 def load_data(datos):
     lista = solve_shift_scheduling(datos)
     return lista
@@ -30,7 +30,7 @@ def load_data(datos):
 #####
 # Transformar dataframe en excel descargable
 #####
-@st.cache_data
+@st.cache
 def transf(tabla, aeropuerto):
     wb = Workbook()
     ws1 = wb.active
