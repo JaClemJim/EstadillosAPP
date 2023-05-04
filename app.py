@@ -1,3 +1,4 @@
+import base64
 import streamlit as st
 import pandas as pd
 from shift_scheduling_sat_revCREF_v20 import solve_shift_scheduling
@@ -30,7 +31,7 @@ def load_data(datos):
 # Transformar dataframe en excel descargable
 #####
 @st.cache_data
-def transf(tabla):
+def transf(tabla, aeropuerto):
     wb = Workbook()
     ws1 = wb.active
     for r in dataframe_to_rows(tabla, index=False, header=False):
@@ -93,9 +94,8 @@ def transf(tabla):
         
 
           
-    # wb.save("prueba_6.xlsx")
+    wb.save(aeropuerto + ".xlsx")
     
-    return wb
 
 aerop = st.text_input("código OACI")
 atcos = st.number_input('Número de ATCOS disponibles para el turno', min_value=1, step=1)
@@ -178,16 +178,19 @@ if boton1:
     df3 = pd.DataFrame(count_dicc).transpose().reset_index().replace({None: ''}).astype('str')
 
     st.write(df3)
+    # st.write(df)
 
-    # excel = transf(df2)
+    transf(df,aerop)
 
-    # href = f'<a href="data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,{excel}" download="estadillo_{aerop}.xlsx">Descargar Estadillo en formato xlsx</a>'
-    # st.markdown(href, unsafe_allow_html=True)
+    nombre = aerop+'.xlsx'
 
-    # st.download_button(
-    #     "Press to Download",
-    #     excel,
-    #     "estadillo_"+aerop+".xlsx"
-    # )
+    with open(nombre, 'rb') as f:
+        estadillo = f.read()
+
+    b64 = base64.b64encode(estadillo).decode()
+
+    href = f'<a href="data:application/estadillo;base64,{b64}" download="{nombre}">Descargar Excel</a>'
+    st.markdown(href, unsafe_allow_html=True)
+
 
 

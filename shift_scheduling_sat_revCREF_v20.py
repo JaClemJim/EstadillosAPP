@@ -17,7 +17,7 @@ from __future__ import print_function
 # módulos lectura de datos entrada
 import myInputConfigCRs # datos json configuración cálculos OR
 import myInputCRs # datos csv escenario (turnos, posiciones/capacidad, demanda)
-import myoutputCRs # escribir resultados en CSV
+# import myoutputCRs # escribir resultados en CSV
 import math # ceil, floor
 import pandas as pd
 
@@ -604,7 +604,7 @@ def solve_shift_scheduling(lista):
         # for h in range(num_hours):
         #     header += myheader
         # print(header)
-        myOutput=myoutputCRs.MyOutput(myAD + "_all.csv") #csv de salida
+        # myOutput=myoutputCRs.MyOutput(myAD + "_all.csv") #csv de salida
         
         ouput = []
         while len(listaposiciones)<= num_blocks: 
@@ -614,12 +614,12 @@ def solve_shift_scheduling(lista):
         straux=",".join([str(int(x)) if x != ' ' else x for x in listaposiciones])
         
         #print('POS_DEMAND: ', strposdemanda)
-        myOutput.añadirResultados('POS_DEMAND:,' + straux + ',') # añade a la cadena
+        # myOutput.añadirResultados('POS_DEMAND:,' + straux + ',') # añade a la cadena
         ouput.append('POS_DEMAND:,' + straux)
 
         straux=",".join([str(int(x)) if x != ' ' else x for x in listademanda])
         #print('POS_DEMAND: ', strposdemanda)
-        myOutput.añadirResultados('TRAFFIC_DEMAND:,' + straux+ ',') # añade cadena
+        # myOutput.añadirResultados('TRAFFIC_DEMAND:,' + straux+ ',') # añade cadena
         ouput.append('TRAFFIC_DEMAND:,' + straux)
 
         for e in range(num_employees):
@@ -630,7 +630,7 @@ def solve_shift_scheduling(lista):
                         schedule += shifts[s] + ','
             fila='worker%i:,%s' % (e, schedule)
             print(fila)
-            myOutput.añadirResultados(fila) # añade a la cadena
+            # myOutput.añadirResultados(fila) # añade a la cadena
             ouput.append(fila)
         
         
@@ -669,8 +669,8 @@ def solve_shift_scheduling(lista):
         print()
         print(tipAssessor)
         
-        myOutput.añadirResultados(tipAssessor)
-        myOutput.volcarResultados(overwrite=True) # sobreescribe archivo
+        # myOutput.añadirResultados(tipAssessor)
+        # myOutput.volcarResultados(overwrite=True) # sobreescribe archivo
         
         
 
