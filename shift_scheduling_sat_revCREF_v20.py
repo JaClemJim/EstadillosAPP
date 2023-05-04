@@ -594,18 +594,7 @@ def solve_shift_scheduling(lista):
 
     solution_printer = cp_model.ObjectiveSolutionPrinter()
     status = solver.SolveWithSolutionCallback(model, solution_printer)
-
-#     Create a solver and solve.
-# =============================================================================
-#     solver = cp_model.CpSolver()
-#     solution_printer = VarArraySolutionPrinter([work])
-#     status = solver.SearchForAllSolutions(model, solution_printer)
-# 
-# 
-#     print('Status = %s' % solver.StatusName(status))
-#     print('Number of solutions found: %i' % solution_printer.solution_count())
-# =============================================================================
-                
+               
     # Print solution.
     #PENDIENTE: PASAR A SOLUTION CALLBACK
     if status == cp_model.OPTIMAL or status == cp_model.FEASIBLE:
@@ -617,36 +606,21 @@ def solve_shift_scheduling(lista):
         # print(header)
         myOutput=myoutputCRs.MyOutput(myAD + "_all.csv") #csv de salida
         
-        #-----------------
-        #se cambia el formato de salida del csv para simplificar su procesado con excel
-        #-----------------
-        
-        # añade a la cadena (separada inicialmente por ':')
-        #scadena=solver.StatusName(status) + ":" 
-        #if match_full_demand:
-            #formato para importar csv en excel
-         #   scadena=scadena + "," + " match_full_demand" + ":,"
-        #scadena = scadena + myAD + ':turno:' + str(myturno) + ':día:' + str(mydiames)
-        #myOutput.añadirResultados(scadena) 
-
-
         ouput = []
         while len(listaposiciones)<= num_blocks: 
             listaposiciones.append(' ')
             listademanda.append(' ')
         
-        #straux=",".join([str(int(x)) for x in listaposiciones])
         straux=",".join([str(int(x)) if x != ' ' else x for x in listaposiciones])
         
         #print('POS_DEMAND: ', strposdemanda)
         myOutput.añadirResultados('POS_DEMAND:,' + straux + ',') # añade a la cadena
-        ouput.append(straux)
+        ouput.append('POS_DEMAND:,' + straux)
 
-        #straux=",".join([str(int(x)) for x in listademanda])
         straux=",".join([str(int(x)) if x != ' ' else x for x in listademanda])
         #print('POS_DEMAND: ', strposdemanda)
         myOutput.añadirResultados('TRAFFIC_DEMAND:,' + straux+ ',') # añade cadena
-        ouput.append(straux)
+        ouput.append('TRAFFIC_DEMAND:,' + straux)
 
         for e in range(num_employees):
             schedule = ''
@@ -694,15 +668,15 @@ def solve_shift_scheduling(lista):
         
         print()
         print(tipAssessor)
-        ouput.append(tipAssessor)
+        
         myOutput.añadirResultados(tipAssessor)
         myOutput.volcarResultados(overwrite=True) # sobreescribe archivo
         
-        Output = pd.DataFrame(ouput)
+        
 
     
 
     print()
     print(solver.ResponseStats())
-    return Output
+    return ouput
 
