@@ -245,7 +245,7 @@ def solve_shift_scheduling(lista):
         # demanda por 60' a bloques de 5'
         print('hourly_cover_demands not empty')
         for x in mC.hourly_cover_demands:
-            for y in range(math.ceil(mC.demand_interval_length/mC.block_length)):
+            for y in range(math.ceil(demand_interval_length/mC.block_length)):
                 listaposiciones.append(int(x[0]))
     else:
         # demand_interval_length=15' p.ej
@@ -254,7 +254,7 @@ def solve_shift_scheduling(lista):
         listaposiciones) = (mE.getdfTrafico(
                 diames=mydiames,
                 idturno=myturno,
-                ventanaflotante=mC.demand_interval_length))
+                ventanaflotante=demand_interval_length))
         
         if len(listademanda)==0:
             print("No hay datos de demanda")
@@ -429,7 +429,7 @@ def solve_shift_scheduling(lista):
     #PRUEBA
     maxblocks_available=num_blocks*num_employees
     print('num_shifts',num_shifts)
-    print('hourly_cover_demands',hourly_cover_demands)   
+    print('hourly_cover_demands',hourly_cover_demands, len(hourly_cover_demands))   
     
     for s in range(1, num_shifts):
         even_shifts=[(sum(hourly_cover_demands[h][s-1] 

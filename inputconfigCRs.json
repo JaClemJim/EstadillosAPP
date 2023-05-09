@@ -28,7 +28,7 @@
        
     ],
     "min_daily_sum_off":0.25,
-    "demand_interval_length":15,
+    "demand_interval_length_":5,
     "hourly_cover_demands": [
         
     ],        

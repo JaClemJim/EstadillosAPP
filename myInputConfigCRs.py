@@ -95,7 +95,7 @@ class MyConfig:
         
         # demand interval length (minutes): 60 min, 20 min, 5 min
         # MENOR QUE 60 MINUTOS
-        self.demand_interval_length=inputdata["demand_interval_length"]
+        # self.demand_interval_length=inputdata["demand_interval_length"]
         
         
         # daily demands for work shifts (morning, afternon, night) for each day

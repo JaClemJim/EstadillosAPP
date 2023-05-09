@@ -8,7 +8,11 @@ from openpyxl.utils.dataframe import dataframe_to_rows
 from openpyxl.utils.cell import get_column_letter
 from openpyxl.styles import PatternFill
 from openpyxl.formatting.rule import ColorScaleRule
+import warnings
 
+#Debido a que hay conflictos de compatibilidad entre versiones de protobuf, ortools y streamlit, aparecen warnings avisando que
+#se instale la ultima versión de las mismas. Se evita con esta librería
+warnings.filterwarnings("ignore")
 
 ######
 #Entradilla
@@ -20,7 +24,13 @@ st.markdown("""
 """)
 
 ######
-# Carga de los resultados en cache
+# Carga de los resultados en caché. Acelera el funcionamiento de la página.
+# se puede considerar st.cache_data según la versión de streamlit. 
+# Entrada:
+#   - Lista con los parámetros que se introducen en la web manualmente
+# Salida:
+#   - Dataframe resumen
+#   - Dataframe con el estadillo
 ######
 @st.cache
 def load_data(datos):
@@ -28,7 +38,11 @@ def load_data(datos):
     return lista
 
 #####
-# Transformar dataframe en excel descargable
+# Transformar dataframe en excel descargable. 
+# Entrada:
+#   - tabla: dataframe con el estadillo
+# salida:
+#   - hoja de excel con el estadillo con el formato seleccionado
 #####
 @st.cache
 def transf(tabla, aeropuerto):
@@ -38,7 +52,7 @@ def transf(tabla, aeropuerto):
         ws1.append(r)
         
 
-    # gradiente de colores
+    # gradiente de colores en primera fila de estadillo
     for col_num, column_title in enumerate(tabla.columns[3:], 1):
         cell = ws1.cell(row=1, column=col_num)
         min_color = '25D82B' # Lightest color
@@ -50,7 +64,6 @@ def transf(tabla, aeropuerto):
         ws1.conditional_formatting.add('D2:CO2', rule)
         
     # Agrupa las celdas de número en la primera fila
-
     grupo = int(time/t_bloque)
     column_index = 4
     num_groups = (tabla.shape[1] - 3) // grupo
@@ -77,7 +90,7 @@ def transf(tabla, aeropuerto):
         
         column_index += group_size
         
-    # rellenar de verde las celdas verdes
+    # rellenar de verde las celdas en las que se trabaja
     for i in range(4, ws1.max_column + 1):
         for j in range(1, ws1.max_row + 1):
             cell = ws1.cell(row=j, column=i)         
@@ -93,10 +106,12 @@ def transf(tabla, aeropuerto):
         ws1.column_dimensions[col_letter].width = 2.8
         
 
-          
-    wb.save(aeropuerto + ".xlsx")
+    #generar excel descargable     
+    wb.save(aeropuerto + ".xlsx") 
     
-
+######
+# Input
+######
 aerop = st.text_input("código OACI")
 atcos = st.number_input('Número de ATCOS disponibles para el turno', min_value=1, step=1)
 turno = st.selectbox('0 -> Mañana, 1 -> tarde, 2 -> noche', [0,1,2])
@@ -106,16 +121,24 @@ demanda = st.number_input('Bloque de tiempo para captar la demanda', min_value=5
 
 list_input = [aerop, atcos, turno, bloque, demanda]
 
+# st.write(list_input)
+
+#######
+# Ejecución del código
+#######
+
 boton1 = st.button("Click para calcular")
 
 # st.write("boton:", boton1)
 
+#cada vez que se hace click se ejecuta, sino no, si se cambia algún campo se reinicia y el código vuelve a esta línea
 if boton1:
     try:
         lista = load_data(list_input)
         time = demanda #minutos
         t_bloque  = bloque #minutos
 
+        # Formato de la salida de la función que calcula el estadillo
         dfs = [pd.DataFrame(line.split(',')).transpose() for line in lista]
         df = pd.concat(dfs).reset_index(drop=True).iloc[:, 0:-1]
 
@@ -181,10 +204,12 @@ if boton1:
         st.write(df3)
         # st.write(df)
 
+        #generar excel
         transf(df,aerop)
 
         nombre = aerop+'.xlsx'
 
+        # Abrir excel, codificar y generar enlace de descarga
         with open(nombre, 'rb') as f:
             estadillo = f.read()
 
