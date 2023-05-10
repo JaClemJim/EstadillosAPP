@@ -99,7 +99,7 @@ def transf(tabla, aeropuerto):
                 fill_color = PatternFill(start_color='91E183', end_color='91E183', fill_type='solid')
                 cell.fill = fill_color
 
-    # cambiar tamaño de columnas manualmente
+    # cambiar tamaño de columnas
     ws1.column_dimensions['A'].width = 20
     for i in range(4, 94):
         col_letter = get_column_letter(i)
@@ -119,7 +119,7 @@ bloque = st.number_input('Bloque de tiempo para dividir la hora', min_value=5, m
 demanda = st.number_input('Bloque de tiempo para captar la demanda', min_value=5, max_value = 60, step=5)
 
 
-list_input = [aerop, atcos, turno, bloque, demanda]
+list_input = [aerop, atcos, turno, bloque, demanda] #lista que sirve para alimentar a la fucnión que genera los estadillos
 
 # st.write(list_input)
 
