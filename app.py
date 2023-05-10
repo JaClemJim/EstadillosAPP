@@ -9,6 +9,8 @@ from openpyxl.utils.cell import get_column_letter
 from openpyxl.styles import PatternFill
 from openpyxl.formatting.rule import ColorScaleRule
 import warnings
+import myInputCRs
+from datetime import date
 
 #Debido a que hay conflictos de compatibilidad entre versiones de protobuf, ortools y streamlit, aparecen warnings avisando que
 #se instale la ultima versión de las mismas. Se evita con esta librería
@@ -117,11 +119,22 @@ atcos = st.number_input('Número de ATCOS disponibles para el turno', min_value=
 turno = st.selectbox('0 -> Mañana, 1 -> tarde, 2 -> noche', [0,1,2])
 bloque = st.number_input('Bloque de tiempo para dividir la hora', min_value=5, max_value= 60, step=5)
 demanda = st.number_input('Bloque de tiempo para captar la demanda', min_value=5, max_value = 60, step=5)
+dia = st.date_input("fecha (por defecto, hoy)")
 
 
-list_input = [aerop, atcos, turno, bloque, demanda] #lista que sirve para alimentar a la fucnión que genera los estadillos
+list_input = [aerop, atcos, turno, bloque, demanda,dia] #lista que sirve para alimentar a la fucnión que genera los estadillos
+st.write(list_input)
 
-# st.write(list_input)
+######
+# demanda por hora para lista manipulable
+######
+if aerop != "":
+
+    a = myInputCRs.MyEscenario(icao=aerop)
+
+    list_demanda = a.getdfTrafico(diames=dia.day, idturno=turno, ventanaflotante=60) #ventana flotante == demand interval length --> poner por hora en ppio luego ajustar si necesario
+
+    st.write(list_demanda[0])
 
 #######
 # Ejecución del código
