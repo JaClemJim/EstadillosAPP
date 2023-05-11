@@ -176,7 +176,7 @@ def add_soft_sum_constraint(model, works, hard_min, soft_min, min_cost,
 
 
 #def solve_shift_scheduling(params, output_proto):
-def solve_shift_scheduling(lista):    
+def solve_shift_scheduling(lista, traf=[]):    
     """Solves the shift scheduling problem."""
     
      #escenario
@@ -190,8 +190,8 @@ def solve_shift_scheduling(lista):
 #    mydiames=15 #SEGÚN FORMATO FICHERO TRAFICO
     myAD=lista[0]
     myturno=lista[2]
-    mydiames=mC.num_day
-    mynummes=mC.num_month
+    mydiames=lista[5].day
+    mynummes=lista[5].month
     myfileTWR=mC.fileTWR
     myfileTrafico=mC.fileTrafico
     mE=myInputCRs.MyEscenario(icao=myAD,fileTWR=myfileTWR,
@@ -250,11 +250,25 @@ def solve_shift_scheduling(lista):
     else:
         # demand_interval_length=15' p.ej
         print('usa getdfTwr()')
-        (listademanda,
-        listaposiciones) = (mE.getdfTrafico(
+
+        
+
+        if traf != []:
+            (listademanda,listaposiciones) = mE.getdfTrafico(
                 diames=mydiames,
                 idturno=myturno,
-                ventanaflotante=demand_interval_length))
+                ventanaflotante=demand_interval_length,
+                TRAF = traf)
+            # listademanda = traf
+            # listaposiciones = listas[1]
+        else:
+            (listademanda,listaposiciones) = mE.getdfTrafico(
+                diames=mydiames,
+                idturno=myturno,
+                ventanaflotante=demand_interval_length,
+                TRAF = [])
+            # listademanda = listas[0] 
+            # listaposiciones = listas[1]           
         
         if len(listademanda)==0:
             print("No hay datos de demanda")

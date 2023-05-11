@@ -82,7 +82,7 @@ class MyEscenario:
         
         return  turnos,duracionturnos,cap,dfpos      
         
-    def getdfTrafico(self,diames,idturno,ventanaflotante=20,separadordatos=","):        
+    def getdfTrafico(self,diames,idturno,ventanaflotante=20,separadordatos=",", TRAF = []):        
         '''
         devuelve demanda en el turno (0,1,...) del diames 
         turno corresponde a un intervalo horas ('turnos ini')
@@ -104,7 +104,7 @@ class MyEscenario:
         
         dfflotante0=self.dfTrafico.loc[myfiltro,
                                   ['HORA_LOCAL','HORA_LOCAL_DEC','TOTALES']]
-        
+                
 #        print(dfflotante0)
         
         frames=[dfflotante0]       
@@ -130,29 +130,42 @@ class MyEscenario:
         #se rellenan las últimas filas (NaN) como la última calculada
         dfflotante['TOTALES_FLOTANTE']=dfflotante[
                 'TOTALES_FLOTANTE'].fillna(method='ffill')
-        
-        # merge performs an INNER JOIN by default
-        # show all records from df1
-        dfflotante=pd.merge(dfflotante, self.dfpos, 
-                            on='TOTALES_FLOTANTE', 
-                            how='left')
-        
+                
         #Filtro por hora decimal del turno
         myfiltro=((dfflotante['HORA_LOCAL_DEC']>=hini) &
                   (dfflotante['HORA_LOCAL_DEC']<hfin) )
         
-        dfflotante=dfflotante.loc[
-                myfiltro,['POS',
-                        'HORA_LOCAL',
+
+        # merge performs an INNER JOIN by default
+        # show all records from df1
+        
+        new_dfflotante=dfflotante.loc[
+                myfiltro,['HORA_LOCAL',
                         'HORA_LOCAL_DEC',
                         'TOTALES',
-                        'TOTALES_FLOTANTE']]
+                        'TOTALES_FLOTANTE']].reset_index(drop=True)
+
+        # print(new_dfflotante, "antes del IF")
         
+        if TRAF != []:
+            new_demand = pd.DataFrame(TRAF).astype('float')
+            # print(new_demand,  "despues de hacerlo dataframe")
+            # print(new_dfflotante['TOTALES_FLOTANTE'], type(new_dfflotante['TOTALES_FLOTANTE']))
+            new_dfflotante['TOTALES_FLOTANTE']  = new_demand.iloc[:,0] #coge la nueva demanda HORARIA y la inserta. Despues hace la division en bloques más pequeños is los hubiere
+
+            # print("TRAF != []")
+        
+            # print(new_dfflotante, "DENTRO DEL IF, DESPUES DEL CAMBIO")
+
+        new_dfflotante_2=pd.merge(new_dfflotante, self.dfpos, 
+                            on='TOTALES_FLOTANTE', 
+                            how='left')
+        # print(new_dfflotante_2, "despues del merge")       
         
 #        print('hini',hini,'hfin',hfin)
 #        print('dfflotante', dfflotante)
-        listademanda=list(dfflotante['TOTALES_FLOTANTE'].to_numpy())
-        listaposiciones=list(dfflotante['POS'].to_numpy())
+        listademanda=list(new_dfflotante_2['TOTALES_FLOTANTE'].to_numpy())
+        listaposiciones=list(new_dfflotante_2['POS'].to_numpy())
         return listademanda,listaposiciones
 
 #print("")

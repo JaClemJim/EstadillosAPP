@@ -35,8 +35,8 @@ st.markdown("""
 #   - Dataframe con el estadillo
 ######
 @st.cache
-def load_data(datos):
-    lista = solve_shift_scheduling(datos)
+def load_data(datos, traf = []):
+    lista = solve_shift_scheduling(datos, traf)
     return lista
 
 #####
@@ -123,18 +123,28 @@ dia = st.date_input("fecha (por defecto, hoy)")
 
 
 list_input = [aerop, atcos, turno, bloque, demanda,dia] #lista que sirve para alimentar a la fucnión que genera los estadillos
-st.write(list_input)
+# st.write(list_input)
 
 ######
 # demanda por hora para lista manipulable
 ######
-if aerop != "":
+check1 = st.checkbox("¿Quieres calcular el estadillo en base a la demanda? haz click")
+if check1:
 
     a = myInputCRs.MyEscenario(icao=aerop)
+    list_demanda = a.getdfTrafico(diames=dia.day, idturno=turno, ventanaflotante=60) #demanda por hora
+    new_list_demanda = []
 
-    list_demanda = a.getdfTrafico(diames=dia.day, idturno=turno, ventanaflotante=60) #ventana flotante == demand interval length --> poner por hora en ppio luego ajustar si necesario
+    for i, num_demand in enumerate(list_demanda[0]):
+        key = f"numero_{i}"
+        nuevo_valor = st.number_input(label=f"Demanda en hora {i+1}", value=int(num_demand), key=key, step = 1)
+        
+        new_list_demanda.append(nuevo_valor)
 
-    st.write(list_demanda[0])
+    
+    # st.write(new_list_demanda)
+
+
 
 #######
 # Ejecución del código
@@ -146,92 +156,96 @@ boton1 = st.button("Click para calcular")
 
 #cada vez que se hace click se ejecuta, sino no, si se cambia algún campo se reinicia y el código vuelve a esta línea
 if boton1:
-    try:
+    # try:
+    if check1:
+        lista = load_data(list_input, traf = new_list_demanda)
+        print("check1")
+    else:
         lista = load_data(list_input)
-        time = demanda #minutos
-        t_bloque  = bloque #minutos
 
-        # Formato de la salida de la función que calcula el estadillo
-        dfs = [pd.DataFrame(line.split(',')).transpose() for line in lista]
-        df = pd.concat(dfs).reset_index(drop=True).iloc[:, 0:-1]
+    time = demanda #minutos
+    t_bloque  = bloque #minutos
 
-        grupo = int(time/t_bloque)
+    # Formato de la salida de la función que calcula el estadillo
+    dfs = [pd.DataFrame(line.split(',')).transpose() for line in lista]
+    df = pd.concat(dfs).reset_index(drop=True).iloc[:, 0:-1]
 
-        lista1 = [i for i in list(filter(lambda x: x != ' ', df.iloc[0,1:])) for j in range(grupo)]
-        lista2 = [i for i in list(filter(lambda x: x != ' ', df.iloc[1,1:])) for j in range(grupo)]
+    grupo = int(time/t_bloque)
 
-        if len(lista1) > (df.shape[1] - 1):
-            a = len(lista1) - (df.shape[1] - 1)
-            lista1 = lista1[:-a]
-            lista2 = lista2[:-a]
+    lista1 = [i for i in list(filter(lambda x: x != ' ', df.iloc[0,1:])) for j in range(grupo)]
+    lista2 = [i for i in list(filter(lambda x: x != ' ', df.iloc[1,1:])) for j in range(grupo)]
 
-        df.loc[0, 1:] = lista1
-        df.loc[1, 1:] = lista2 
+    if len(lista1) > (df.shape[1] - 1):
+        a = len(lista1) - (df.shape[1] - 1)
+        lista1 = lista1[:-a]
+        lista2 = lista2[:-a]
 
-        df.loc[:1, 1:]=df.loc[:1, 1:].astype('int')
+    df.loc[0, 1:] = lista1
+    df.loc[1, 1:] = lista2 
 
-        durations = []
-        for index, row in df.iterrows():
-            duration = 0
-            for value in row.values:
-                if value == 'T':
-                    duration += 1
-            durations.append(duration)
+    df.loc[:1, 1:]=df.loc[:1, 1:].astype('int')
 
-        porcentaje = [(i/(len(df.columns)-1))*100 for i in durations]
-        duration = [(i*t_bloque)/60 for i in durations]
+    durations = []
+    for index, row in df.iterrows():
+        duration = 0
+        for value in row.values:
+            if value == 'T':
+                duration += 1
+        durations.append(duration)
 
-        df.insert(1, 'tiempo', duration)
-        df.insert(2, 'porcentaje', porcentaje)
+    porcentaje = [(i/(len(df.columns)-1))*100 for i in durations]
+    duration = [(i*t_bloque)/60 for i in durations]
+
+    df.insert(1, 'tiempo', duration)
+    df.insert(2, 'porcentaje', porcentaje)
+    
+    df2 = df.iloc[2:,3:]
+    count_dicc = {}
+
+    for index, row in df2.iterrows():
+        count_list = []
+        current_item = row.values[0]
+        current_count = t_bloque
         
-        df2 = df.iloc[2:,3:]
-        count_dicc = {}
-
-        for index, row in df2.iterrows():
-            count_list = []
-            current_item = row.values[0]
-            current_count = t_bloque
-            
-            for item in row.values[1:]:
-                if item == current_item:
-                    current_count += t_bloque
-                else:
-                    last_item = current_item
-                    count_list.append((last_item+':', current_count))
-                    current_item = item
-                    current_count = t_bloque
-            
-            count_list.append(((item+':', current_count)))
-            
-            count_dicc['worker'+str(index-2)] = count_list
-            
-        longitud_maxima = max(map(len, count_dicc.values()))
-
-        for key in count_dicc:
-            lista = count_dicc[key]
-            while len(lista) < longitud_maxima:
-                lista.append(None)
+        for item in row.values[1:]:
+            if item == current_item:
+                current_count += t_bloque
+            else:
+                last_item = current_item
+                count_list.append((last_item+':', current_count))
+                current_item = item
+                current_count = t_bloque
         
-        df3 = pd.DataFrame(count_dicc).transpose().reset_index().replace({None: ''}).astype('str')
+        count_list.append(((item+':', current_count)))
+        
+        count_dicc['worker'+str(index-2)] = count_list
+        
+    longitud_maxima = max(map(len, count_dicc.values()))
 
-        st.write(df3)
-        # st.write(df)
+    for key in count_dicc:
+        lista = count_dicc[key]
+        while len(lista) < longitud_maxima:
+            lista.append(None)
+    
+    df3 = pd.DataFrame(count_dicc).transpose().reset_index().replace({None: ''}).astype('str')
 
-        #generar excel
-        transf(df,aerop)
+    st.write(df3)
 
-        nombre = aerop+'.xlsx'
+    #generar excel
+    transf(df,aerop)
 
-        # Abrir excel, codificar y generar enlace de descarga
-        with open(nombre, 'rb') as f:
-            estadillo = f.read()
+    nombre = aerop+'.xlsx'
 
-        b64 = base64.b64encode(estadillo).decode()
+    # Abrir excel, codificar y generar enlace de descarga
+    with open(nombre, 'rb') as f:
+        estadillo = f.read()
 
-        href = f'<a href="data:application/estadillo;base64,{b64}" download="{nombre}">Descargar Excel</a>'
-        st.markdown(href, unsafe_allow_html=True)
-    except: 
-        st.error('Ha habido un error de cálculo, cambia los datos de entrada')
+    b64 = base64.b64encode(estadillo).decode()
+
+    href = f'<a href="data:application/estadillo;base64,{b64}" download="{nombre}">Descargar Excel</a>'
+    st.markdown(href, unsafe_allow_html=True)
+    # except: 
+    #     st.error('Ha habido un error de cálculo, cambia los datos de entrada')
 
 
 
