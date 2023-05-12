@@ -22,7 +22,8 @@ warnings.filterwarnings("ignore")
 st.write(""" # ESTADILLOS INTERACTIVOS """)
 
 st.markdown("""
- Seleccione los parámetros: 
+ Seleccione los parámetros:
+ (Imprescindeble rellenar nombre de aeropuerto primero) 
 """)
 
 ######
@@ -114,6 +115,7 @@ def transf(tabla, aeropuerto):
 ######
 # Input
 ######
+
 aerop = st.text_input("código OACI")
 atcos = st.number_input('Número de ATCOS disponibles para el turno', min_value=1, step=1)
 turno = st.selectbox('0 -> Mañana, 1 -> tarde, 2 -> noche', [0,1,2])
