@@ -2,7 +2,7 @@ import base64
 import streamlit as st
 import pandas as pd
 from shift_scheduling_sat_revCREF_v20 import solve_shift_scheduling
-from openpyxl import Workbook
+from openpyxl import Workbook, load_workbook
 from openpyxl.styles import PatternFill
 from openpyxl.utils.dataframe import dataframe_to_rows
 from openpyxl.utils.cell import get_column_letter
@@ -198,7 +198,7 @@ if boton1:
 
     df.insert(1, 'tiempo', duration)
     df.insert(2, 'porcentaje', porcentaje)
-    
+
     df2 = df.iloc[2:,3:]
     count_dicc = {}
 
@@ -226,7 +226,7 @@ if boton1:
         lista = count_dicc[key]
         while len(lista) < longitud_maxima:
             lista.append(None)
-    
+
     df3 = pd.DataFrame(count_dicc).transpose().reset_index().replace({None: ''}).astype('str')
 
     st.write(df3)
@@ -242,10 +242,16 @@ if boton1:
 
     b64 = base64.b64encode(estadillo).decode()
 
+    # display = f'<iframe src="data:application/vnd.ms-excel;base64,{b64}" width="800" height="800" type="application/vnd.ms-excel"></iframe>'
+    # st.markdown(display, unsafe_allow_html=True)
+
     href = f'<a href="data:application/estadillo;base64,{b64}" download="{nombre}">Descargar Excel</a>'
     st.markdown(href, unsafe_allow_html=True)
-    # except: 
-    #     st.error('Ha habido un error de cálculo, cambia los datos de entrada')
+    # except Exception as e:
+    #     st.write(str(e))
+
+
+        # st.error('Ha habido un error de cálculo, cambia los datos de entrada')
 
 
 
