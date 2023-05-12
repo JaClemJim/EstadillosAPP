@@ -272,10 +272,14 @@ def solve_shift_scheduling(lista, traf=[]):
         
         if len(listademanda)==0:
             print("No hay datos de demanda")
-            return
+
+            msg2 = "No hay datos de demanda"
+            return msg2
         if len(listaposiciones)==0:
             print("No hay datos de posiciones")
-            return
+
+            msg3 = "No hay datos de posiciones"
+            return msg3
         print(mC.shifts,listademanda,listaposiciones)
         
     # según demanda posiciones ó tráfico (pasar a int)
@@ -459,7 +463,8 @@ def solve_shift_scheduling(lista, traf=[]):
         print("minimum daily offblocks per employee",min_daily_sum_offblocks)
         print("available offblocks per employee",aux)
         print("Check number of employees")
-        return
+        msg1 = "Número de ATCOS insuficiente"
+        return msg1
     
     even_shifts.insert(0,aux) 
     print('even_shifts',even_shifts)
@@ -649,6 +654,8 @@ def solve_shift_scheduling(lista, traf=[]):
         
         
         # mensaje del asistente para evuluar soluciones
+        msg_list = []
+
         tipAssessor=""
         incumplebloque_descansominimo=False
         print()
@@ -671,26 +678,31 @@ def solve_shift_scheduling(lista, traf=[]):
                 #primero probar quitando condición match_demand
                 tipAssessor=tipAssessor + "\n Consider [match_full_demand]=0"
                 tipAssessor=tipAssessor + "\n Or check [num_employees]"
+                msg4 = "Asistente para evaluar soluciones (OPTIMAL or FEASIBLE): "+tipAssessor
+                msg_list.append(msg4)
             else:
                 #después probar suavizar condición even_shift
                 tipAssessor=tipAssessor + "\n Consider increase [even_shift_tolerance]"
-            
+                msg5 = "Asistente para evaluar soluciones (OPTIMAL or FEASIBLE): " + tipAssessor
+                msg_list.append(msg5)
         for i, var in enumerate(obj_int_vars):
             if solver.Value(var) > 0:
                 print('  %s violated by %i, linear penalty=%i' %
                       (var.Name(), solver.Value(var), obj_int_coeffs[i]))
-        
         print()
         print(tipAssessor)
-        
+
         # myOutput.añadirResultados(tipAssessor)
         # myOutput.volcarResultados(overwrite=True) # sobreescribe archivo
-        
-        
 
-    
+    elif status == cp_model.INFEASIBLE or status == cp_model.UNKNOWN:
+        msg6 = "Con la combinación de variables introducidas no es posible optimizar una programación para la jornada actual"
+        return msg6    
+
 
     print()
     print(solver.ResponseStats())
-    return ouput
+
+    
+    return [ouput, msg_list]
 

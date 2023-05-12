@@ -11,23 +11,10 @@ from openpyxl.formatting.rule import ColorScaleRule
 import warnings
 import myInputCRs
 from datetime import date
-import logging
-import sys
 
 #Debido a que hay conflictos de compatibilidad entre versiones de protobuf, ortools y streamlit, aparecen warnings avisando que
 #se instale la ultima versión de las mismas. Se evita con esta librería
 warnings.filterwarnings("ignore")
-
-# Configurar el logger
-logger = logging.getLogger()
-logger.setLevel(logging.DEBUG)
-
-# Crear un streamhandler para redirigir los mensajes a stdout
-streamhandler = logging.StreamHandler(sys.stdout)
-streamhandler.setLevel(logging.DEBUG)
-
-# Agregar el streamhandler al logger
-logger.addHandler(streamhandler)
 
 ######
 #Entradilla
@@ -37,7 +24,7 @@ st.write(""" # ESTADILLOS INTERACTIVOS """)
 st.markdown("""
  Seleccione los parámetros:
 
- (Imprescindeble rellenar nombre de aeropuerto primero) 
+ (Imprescindible rellenar nombre de aeropuerto primero) 
 """)
 
 ######
@@ -172,18 +159,25 @@ boton1 = st.button("Click para calcular")
 
 #cada vez que se hace click se ejecuta, sino no, si se cambia algún campo se reinicia y el código vuelve a esta línea
 if boton1:
-    try:
-        if check1:
-            lista = load_data(list_input, traf = new_list_demanda)
-            print("check1")
-        else:
-            lista = load_data(list_input)
+    # try:
+    if check1:
+        sol = load_data(list_input, traf = new_list_demanda)
+    else:
+        sol = load_data(list_input)
+
+
+    if type(sol) == list:
+        resultado = sol[0]
+        mensaje = sol[1]
+
+        if len(mensaje) !=0:
+            st.write(mensaje[0], '\n', mensaje[1])
 
         time = demanda #minutos
         t_bloque  = bloque #minutos
 
         # Formato de la salida de la función que calcula el estadillo
-        dfs = [pd.DataFrame(line.split(',')).transpose() for line in lista]
+        dfs = [pd.DataFrame(line.split(',')).transpose() for line in resultado]
         df = pd.concat(dfs).reset_index(drop=True).iloc[:, 0:-1]
 
         grupo = int(time/t_bloque)
@@ -258,15 +252,15 @@ if boton1:
 
         b64 = base64.b64encode(estadillo).decode()
 
-        # display = f'<iframe src="data:application/vnd.ms-excel;base64,{b64}" width="800" height="800" type="application/vnd.ms-excel"></iframe>'
-        # st.markdown(display, unsafe_allow_html=True)
-
         href = f'<a href="data:application/estadillo;base64,{b64}" download="{nombre}">Descargar Excel</a>'
         st.markdown(href, unsafe_allow_html=True)
-    except Exception as e:
-        # st.write(str(e))
-        logging.error(str(e))
-        st.error('Ha habido un error de cálculo, cambia los datos de entrada')
+    else:
+        st.error(sol)
+
+    # except Exception as e:
+    #     # st.write(str(e))
+    #     logging.error(str(e))
+    #     st.error(f"{str(e)}")
 
 
 
