@@ -209,6 +209,8 @@ if boton1:
         df.insert(1, 'tiempo', duration)
         df.insert(2, 'porcentaje', porcentaje)
 
+        print(df)
+
         df2 = df.iloc[2:,3:]
         count_dicc = {}
 
@@ -237,9 +239,9 @@ if boton1:
             while len(lista) < longitud_maxima:
                 lista.append(None)
 
-        # df3 = pd.DataFrame(count_dicc).transpose().reset_index().replace({None: ''}).astype('str')
+        df3 = pd.DataFrame(count_dicc).transpose().reset_index().replace({None: ''}).astype('str')
 
-        # st.write(df3)
+        st.write(df3)
 
         #generar excel
         transf(df,aerop)
