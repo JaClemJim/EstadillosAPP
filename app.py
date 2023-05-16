@@ -131,7 +131,7 @@ list_input = [aerop, atcos, turno, bloque, demanda, dia] #lista que sirve para a
 ######
 # demanda por hora para lista manipulable
 ######
-check1 = st.checkbox("¿Quieres modificar la demanda a mano? haz click")
+check1 = st.checkbox("Selecciona el recuadro si quieres modificar la demanda a mano")
 if check1:
 
     a = myInputCRs.MyEscenario(icao=aerop)
