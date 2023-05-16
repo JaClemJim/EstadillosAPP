@@ -219,7 +219,7 @@ def solve_shift_scheduling(lista, traf=[]):
     block_length=lista[3] # 5  minutes
     blocks_per_hour = int(60/block_length) # equivale a days/week=7
     blocks_per_interval=int(demand_interval_length/block_length)
-    num_blocks = int(num_hours * blocks_per_hour)    # bloques (ej. 15 minutos)
+    num_blocks = int(num_hours * blocks_per_hour) # bloques (ej. 15 minutos)
     
     #25% 
     min_daily_sum_offblocks=math.ceil(mC.min_daily_sum_off*num_blocks)
@@ -673,17 +673,17 @@ def solve_shift_scheduling(lista, traf=[]):
                     print('  %s fulfilled, gain=%i' % (var.Name(), -penalty))
         
         if incumplebloque_descansominimo:
-            tipAssessor="continuous off shift_constraint violated."
+            tipAssessor="continuous off shift_constraint violated (Se sobrepasan las restricciones duras en varios momentos aunque el algoritmo encuentra solución al problema)."
             if match_full_demand:
                 #primero probar quitando condición match_demand
                 tipAssessor=tipAssessor + "\n Consider [match_full_demand]=0"
                 tipAssessor=tipAssessor + "\n Or check [num_employees]"
-                msg4 = "Asistente para evaluar soluciones (OPTIMAL or FEASIBLE): "+tipAssessor
+                msg4 = "Asistente para evaluar soluciones (OPTIMAL or FEASIBLE):  "+tipAssessor
                 msg_list.append(msg4)
             else:
                 #después probar suavizar condición even_shift
                 tipAssessor=tipAssessor + "\n Consider increase [even_shift_tolerance]"
-                msg5 = "Asistente para evaluar soluciones (OPTIMAL or FEASIBLE): " + tipAssessor
+                msg5 = "Asistente para evaluar soluciones (OPTIMAL or FEASIBLE):  " + tipAssessor
                 msg_list.append(msg5)
         for i, var in enumerate(obj_int_vars):
             if solver.Value(var) > 0:

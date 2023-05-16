@@ -103,9 +103,18 @@ class MyEscenario:
                   (self.dfTrafico['HORA_LOCAL_DEC']<hfin+1) )
         
         dfflotante0=self.dfTrafico.loc[myfiltro,
-                                  ['HORA_LOCAL','HORA_LOCAL_DEC','TOTALES']]
+                                  ['HORA_LOCAL','HORA_LOCAL_DEC','TOTALES']].reset_index(drop=True)
                 
-#        print(dfflotante0)
+        # print(dfflotante0, "LINEA 108")
+
+        if TRAF != []:
+            new_demand = pd.DataFrame(TRAF).astype('float')
+            # print(new_demand,  "despues de hacerlo dataframe")
+            # print(new_dfflotante['TOTALES_FLOTANTE'], type(new_dfflotante['TOTALES_FLOTANTE']))
+            dfflotante0['TOTALES']  = new_demand.iloc[:,0] 
+
+            # print(dfflotante0, "DENTRO DEL IF, DESPUES DEL CAMBIO")
+
         
         frames=[dfflotante0]       
         #ventana flotante
@@ -137,27 +146,8 @@ class MyEscenario:
         
 
         # merge performs an INNER JOIN by default
-        # show all records from df1
-        
-        new_dfflotante=dfflotante.loc[
-                myfiltro,['HORA_LOCAL',
-                        'HORA_LOCAL_DEC',
-                        'TOTALES',
-                        'TOTALES_FLOTANTE']].reset_index(drop=True)
 
-        # print(new_dfflotante, "antes del IF")
-        
-        if TRAF != []:
-            new_demand = pd.DataFrame(TRAF).astype('float')
-            # print(new_demand,  "despues de hacerlo dataframe")
-            # print(new_dfflotante['TOTALES_FLOTANTE'], type(new_dfflotante['TOTALES_FLOTANTE']))
-            new_dfflotante['TOTALES_FLOTANTE']  = new_demand.iloc[:,0] #coge la nueva demanda HORARIA y la inserta. Despues hace la division en bloques más pequeños is los hubiere
-
-            # print("TRAF != []")
-        
-            # print(new_dfflotante, "DENTRO DEL IF, DESPUES DEL CAMBIO")
-
-        new_dfflotante_2=pd.merge(new_dfflotante, self.dfpos, 
+        new_dfflotante_2=pd.merge(dfflotante, self.dfpos, 
                             on='TOTALES_FLOTANTE', 
                             how='left')
         # print(new_dfflotante_2, "despues del merge")       

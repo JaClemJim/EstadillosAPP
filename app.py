@@ -125,7 +125,7 @@ demanda = st.number_input('Bloque de tiempo para captar la demanda', min_value=5
 dia = st.date_input("fecha (por defecto, hoy)")
 
 
-list_input = [aerop, atcos, turno, bloque, demanda,dia] #lista que sirve para alimentar a la fucnión que genera los estadillos
+list_input = [aerop, atcos, turno, bloque, demanda, dia] #lista que sirve para alimentar a la fucnión que genera los estadillos
 # st.write(list_input)
 
 ######
@@ -171,7 +171,7 @@ if boton1:
         mensaje = sol[1]
 
         if len(mensaje) !=0:
-            st.write(mensaje[0], '\n', mensaje[1])
+            st.write(mensaje[0])
 
         time = demanda #minutos
         t_bloque  = bloque #minutos
@@ -237,9 +237,9 @@ if boton1:
             while len(lista) < longitud_maxima:
                 lista.append(None)
 
-        df3 = pd.DataFrame(count_dicc).transpose().reset_index().replace({None: ''}).astype('str')
+        # df3 = pd.DataFrame(count_dicc).transpose().reset_index().replace({None: ''}).astype('str')
 
-        st.write(df3)
+        # st.write(df3)
 
         #generar excel
         transf(df,aerop)
