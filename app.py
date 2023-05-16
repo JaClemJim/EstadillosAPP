@@ -2,7 +2,7 @@ import base64
 import streamlit as st
 import pandas as pd
 from shift_scheduling_sat_revCREF_v20 import solve_shift_scheduling
-from openpyxl import Workbook, load_workbook
+from openpyxl import Workbook
 from openpyxl.styles import PatternFill
 from openpyxl.utils.dataframe import dataframe_to_rows
 from openpyxl.utils.cell import get_column_letter
@@ -10,11 +10,12 @@ from openpyxl.styles import PatternFill
 from openpyxl.formatting.rule import ColorScaleRule
 import warnings
 import myInputCRs
-from datetime import date
 
 #Debido a que hay conflictos de compatibilidad entre versiones de protobuf, ortools y streamlit, aparecen warnings avisando que
 #se instale la ultima versión de las mismas. Se evita con esta librería
 warnings.filterwarnings("ignore")
+
+st.set_page_config(layout="wide")
 
 ######
 #Entradilla
@@ -49,7 +50,7 @@ def load_data(datos, traf = []):
 #   - hoja de excel con el estadillo con el formato seleccionado
 #####
 @st.cache
-def transf(tabla, aeropuerto):
+def transf(tabla, tabla2, aeropuerto):
     wb = Workbook()
     ws1 = wb.active
     for r in dataframe_to_rows(tabla, index=False, header=False):
@@ -108,6 +109,10 @@ def transf(tabla, aeropuerto):
     for i in range(4, 94):
         col_letter = get_column_letter(i)
         ws1.column_dimensions[col_letter].width = 2.8
+    
+    ws2 = wb.create_sheet()
+    for t in dataframe_to_rows(tabla2, index=False, header=False):
+        ws2.append(t)
         
 
     #generar excel descargable     
@@ -209,7 +214,7 @@ if boton1:
         df.insert(1, 'tiempo', duration)
         df.insert(2, 'porcentaje', porcentaje)
 
-        print(df)
+        # print(df)
 
         df2 = df.iloc[2:,3:]
         count_dicc = {}
@@ -241,10 +246,39 @@ if boton1:
 
         df3 = pd.DataFrame(count_dicc).transpose().reset_index().replace({None: ''}).astype('str')
 
-        st.write(df3)
+        # st.write(df3)
+
+        new_columns = []
+        for col in df.columns:
+            if isinstance(col, int) and col != 0:
+                new_columns.append("Bloque nº " + str(col))
+            elif col == 0:
+                new_columns.append("ATCO")
+            else:
+                new_columns.append(col)
+        
+        df.columns = new_columns
+
+        # Crear una función para aplicar estilos personalizados a las celdas
+        def apply_cell_style(params):
+            style = {}
+            if params.value == 'T':
+                style = {'backgroundColor': 'green', 'color': 'white'}
+            return style
+        
+        # Definir una función para aplicar estilos personalizados a las celdas
+        def highlight_cells(value):
+            style = 'background-color: green; color: white' if value == 'T' else ''
+            return style
+
+        # Aplicar estilos personalizados al DataFrame
+        styled_df = df.style.applymap(highlight_cells)
+
+        # Mostrar el DataFrame en Streamlit
+        st.dataframe(styled_df)
 
         #generar excel
-        transf(df,aerop)
+        transf(df, df3, aerop)
 
         nombre = aerop+'.xlsx'
 
