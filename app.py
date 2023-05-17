@@ -8,6 +8,7 @@ from openpyxl.utils.dataframe import dataframe_to_rows
 from openpyxl.utils.cell import get_column_letter
 from openpyxl.styles import PatternFill
 from openpyxl.formatting.rule import ColorScaleRule
+import datetime
 import warnings
 import myInputCRs
 
@@ -41,6 +42,20 @@ st.markdown("""
 def load_data(datos, traf = []):
     lista = solve_shift_scheduling(datos, traf)
     return lista
+
+@st.cache
+def load_turnos(datos, ad, t_id):
+    h=pd.read_csv(datos,sep=";")
+
+    h_2 =  h.loc[h['ICAO']==ad,['turnoshini']]
+
+    h_3 = [i.split(',') for i in h_2['turnoshini']]
+
+    inicio = float(h_3[0][t_id])
+
+    fin = float(h_3[0][t_id+1])
+
+    return inicio, fin
 
 #####
 # Transformar dataframe en excel descargable. 
@@ -259,12 +274,6 @@ if boton1:
         
         df.columns = new_columns
 
-        # Crear una función para aplicar estilos personalizados a las celdas
-        def apply_cell_style(params):
-            style = {}
-            if params.value == 'T':
-                style = {'backgroundColor': 'green', 'color': 'white'}
-            return style
         
         # Definir una función para aplicar estilos personalizados a las celdas
         def highlight_cells(value):
