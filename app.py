@@ -274,9 +274,9 @@ if boton1:
         
         df.columns = new_columns
 
-        for col in df.columns:
-            if "Bloque nº" in col:
-                df[col] = df[col].astype(object)
+        # for col in df.columns:
+        #     if "Bloque nº" in col:
+        #         df[col] = df[col].astype()
 
         
         # Definir una función para aplicar estilos personalizados a las celdas
