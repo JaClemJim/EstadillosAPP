@@ -283,6 +283,10 @@ if boton1:
         # Aplicar estilos personalizados al DataFrame
         styled_df = df.style.applymap(highlight_cells)
 
+        for col in styled_df.columns:
+            if "Bloque nº" in col:
+                styled_df[col] = styled_df[col].astype(object)
+
         # Mostrar el DataFrame en Streamlit
         st.dataframe(styled_df)
 
