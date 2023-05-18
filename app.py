@@ -336,7 +336,7 @@ if boton1:
             if value == 'T':
                 return {'backgroundColor': 'green', 'color': 'white'}
             else:
-                return {}
+                return {'backgroundColor': 'white', 'color': 'black'}
 
         # Crear una lista de diccionarios con los estilos para cada celda
         cell_styles = []
