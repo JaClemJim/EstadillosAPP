@@ -285,7 +285,7 @@ if boton1:
             return style
 
         # Aplicar estilos personalizados al DataFrame
-        styled_df = df.style.applymap(highlight_cells)
+        styled_df = df.style.apply(lambda row: highlight_cells(row), axis=1)
 
         # Mostrar el DataFrame en Streamlit
         st.dataframe(styled_df)
