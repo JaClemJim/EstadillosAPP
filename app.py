@@ -281,12 +281,11 @@ if boton1:
         df_copy = df.copy()
 
         titulos = df_copy.columns
-        titulos[0] = "ATCOS"
 
         h_ini = load_turnos("datosDependencias1.csv", aerop, turno)
         lista_horas = generar_lista_hora(h_ini, len(titulos))
 
-        new_columns = titulos[:3] + lista_horas
+        new_columns = ["ATCOS"] + titulos[1:3] + lista_horas
 
 
         # new_columns = []
