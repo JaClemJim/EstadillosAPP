@@ -326,14 +326,18 @@ if boton1:
         # Aplicar estilos personalizados al DataFrame
         styled_df = df_copy.style.apply(highlight_cells, axis=0)
 
+
         # Definir el estilo CSS personalizado para ajustar el tamaño de las celdas
-        custom_css = [
-            {'selector': '.dataframe td', 'props': [('padding', '1px')]},
-            {'selector': '.dataframe th', 'props': [('padding', '1px')]}
-        ]
+        custom_css = """
+        <style>
+        .dataframe td, .dataframe th {
+            padding: 5px;
+        }
+        </style>
+        """
 
         # Mostrar el DataFrame en Streamlit con el estilo CSS personalizado
-        st.write(f'<style>{custom_css}</style>', unsafe_allow_html=True)
+        st.markdown(custom_css, unsafe_allow_html=True)
 
         # Mostrar el DataFrame en Streamlit
         st.dataframe(styled_df)
