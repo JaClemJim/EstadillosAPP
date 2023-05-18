@@ -303,7 +303,7 @@ if boton1:
         df_copy.columns = new_columns
 
         for col in df_copy.columns:
-            if "H inicio" in col:
+            if "H Inicio " in col:
                 df_copy[col] = df_copy[col].astype(str)
 
         
