@@ -331,7 +331,7 @@ if boton1:
         custom_css = """
         <style>
         .dataframe td, .dataframe th {
-            padding: 5px;
+            padding: 1px;
         }
         </style>
         """
