@@ -350,14 +350,12 @@ if boton1:
         fig = go.Figure(data=[go.Table(
             header=dict(values=list(df.columns)),
             cells=dict(values=[df[column] for column in df.columns],
-                    fill=dict(color=[column_styles[column_index][row_index]['fill']['color']
-                                        for column_index, row_index in
-                                        [(column_index, row_index) for column_index in range(len(df.columns))
-                                        for row_index in range(len(df[column]))]]),
-                    font=dict(color=[column_styles[column_index][row_index]['font']['color']
-                                        for column_index, row_index in
-                                        [(column_index, row_index) for column_index in range(len(df.columns))
-                                        for row_index in range(len(df[column]))]])))
+                    fill=dict(color=[[column_styles[column_index][row_index]['fill']['color']
+                                        for row_index in range(len(df[column]))]
+                                        for column_index in range(len(df.columns))]),
+                    font=dict(color=[[column_styles[column_index][row_index]['font']['color']
+                                        for row_index in range(len(df[column]))]
+                                        for column_index in range(len(df.columns))])))
         ])
 
         # Mostrar la figura en Streamlit
