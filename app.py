@@ -263,8 +263,10 @@ if boton1:
 
         # st.write(df3)
 
+        df_copy = df.copy()
+
         new_columns = []
-        for col in df.columns:
+        for col in df_copy.columns:
             if isinstance(col, int) and col != 0:
                 new_columns.append("Bloque nº " + str(col))
             elif col == 0:
@@ -272,11 +274,11 @@ if boton1:
             else:
                 new_columns.append(col)
         
-        df.columns = new_columns
+        df_copy.columns = new_columns
 
-        for col in df.columns:
+        for col in df_copy.columns:
             if "Bloque nº" in col:
-                df[col] = df[col].astype(str)
+                df_copy[col] = df_copy[col].astype(str)
 
         
         # # Definir una función para aplicar estilos personalizados a las celdas
@@ -296,7 +298,7 @@ if boton1:
             return style
 
         # Aplicar estilos personalizados al DataFrame
-        styled_df = df.style.apply(highlight_cells, axis=0)
+        styled_df = df_copy.style.apply(highlight_cells, axis=0)
 
         # Mostrar el DataFrame en Streamlit
         st.dataframe(styled_df)
