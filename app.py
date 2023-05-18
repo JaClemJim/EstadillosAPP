@@ -279,13 +279,24 @@ if boton1:
                 df[col] = df[col].astype(object)
 
         
+        # # Definir una función para aplicar estilos personalizados a las celdas
+        # def highlight_cells(value):
+        #     style = 'background-color: green; color: white' if value == 'T' else ''
+        #     return style
+
+        # # Aplicar estilos personalizados al DataFrame
+        # styled_df = df.style.apply(lambda row: highlight_cells(row), axis=1)
+
+        # # Mostrar el DataFrame en Streamlit
+        # st.dataframe(styled_df)
+
         # Definir una función para aplicar estilos personalizados a las celdas
         def highlight_cells(value):
-            style = 'background-color: green; color: white' if value == 'T' else ''
+            style = ['background-color: green; color: white' if v == 'T' else '' for v in value]
             return style
 
         # Aplicar estilos personalizados al DataFrame
-        styled_df = df.style.apply(lambda row: highlight_cells(row), axis=1)
+        styled_df = df.style.apply(highlight_cells, axis=0)
 
         # Mostrar el DataFrame en Streamlit
         st.dataframe(styled_df)
