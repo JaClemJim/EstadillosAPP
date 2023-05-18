@@ -67,7 +67,7 @@ def generar_lista_hora(hora_inicial, num_columnas):
     lista_hora = ["H Inicio " + hora_inicio]
 
     for _ in range(num_columnas - 1):
-        hora_actual += timedelta(minutes=5)
+        hora_actual += timedelta(minutes=bloque)
         lista_hora.append("H Inicio " + hora_actual.strftime('%H:%M'))
 
     return lista_hora
@@ -280,7 +280,7 @@ if boton1:
 
         df_copy = df.copy()
 
-        titulos = df_copy.columns
+        titulos = list(df_copy.columns)
 
         h_ini = load_turnos("datosDependencias1.csv", aerop, turno)
         lista_horas = generar_lista_hora(h_ini, len(titulos))
