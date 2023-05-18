@@ -66,7 +66,7 @@ def generar_lista_hora(hora_inicial, num_columnas):
     hora_actual = datetime.strptime(hora_inicio, '%H:%M')
     lista_hora = ["H Inicio " + hora_inicio]
 
-    for _ in range(num_columnas - 1):
+    for _ in range(num_columnas - 4):
         hora_actual += timedelta(minutes=bloque)
         lista_hora.append("H Inicio " + hora_actual.strftime('%H:%M'))
 
@@ -285,6 +285,9 @@ if boton1:
         h_ini = load_turnos("datosDependencias1.csv", aerop, turno)
         lista_horas = generar_lista_hora(h_ini, len(titulos))
 
+        print(lista_horas, len(lista_horas))
+        print(titulos, len(titulos))
+
         new_columns = ["ATCOS", "Tiempo", "Porcentaje"] + lista_horas
 
 
@@ -346,6 +349,3 @@ if boton1:
     #     # st.write(str(e))
     #     logging.error(str(e))
     #     st.error(f"{str(e)}")
-
-
-
