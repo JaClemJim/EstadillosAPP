@@ -338,6 +338,7 @@ if boton1:
                     return {'fill': {'color': 'white'}, 'font': {'color': 'chocolate'}}
 
             # Crear una lista de diccionarios con los estilos para cada celda
+
         styles = []
         for column in df.columns:
             column_styles = []
@@ -347,16 +348,20 @@ if boton1:
             styles.append(column_styles)
 
         # Crear la figura de Plotly con la tabla
+        table_data = []
+        for i, column in enumerate(df.columns):
+            column_data = []
+            for j, value in enumerate(df[column]):
+                cell_data = value
+                cell_style = styles[i][j]
+                cell_data.update(cell_style)
+                column_data.append(cell_data)
+            table_data.append(column_data)
+
         fig = go.Figure(data=[go.Table(
             header=dict(values=list(df.columns)),
-            cells=dict(values=[df[column] for column in df.columns],
-                    fill=dict(color=[[column_styles[column_index][row_index]['fill']['color']
-                                        for row_index in range(len(df[column]))]
-                                        for column_index in range(len(df.columns))]),
-                    font=dict(color=[[column_styles[column_index][row_index]['font']['color']
-                                        for row_index in range(len(df[column]))]
-                                        for column_index in range(len(df.columns))])))
-        ])
+            cells=dict(values=table_data)
+        )])
 
         # Mostrar la figura en Streamlit
         st.plotly_chart(fig)
