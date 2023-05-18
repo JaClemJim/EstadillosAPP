@@ -331,34 +331,34 @@ if boton1:
 
         import plotly.graph_objects as go
 
-        # Definir una función para aplicar estilos personalizados a las celdas
         def highlight_cells(value):
-            if value == 'T':
-                return {'backgroundColor': 'green', 'color': 'white'}
-            else:
-                return {'backgroundColor': 'white', 'color': 'chocolate'}
+                if value == 'T':
+                    return {'fill': {'color': 'green'}, 'font': {'color': 'white'}}
+                else:
+                    return {'fill': {'color': 'white'}, 'font': {'color': 'chocolate'}}
 
-        # Crear una lista de diccionarios con los estilos para cada celda
-        cell_styles = []
-        for column in df_copy.columns:
+            # Crear una lista de diccionarios con los estilos para cada celda
+        styles = []
+        for column in df.columns:
             column_styles = []
-            for value in df_copy[column]:
-                column_styles.append(highlight_cells(value))
-            cell_styles.append(column_styles)
+            for value in df[column]:
+                cell_style = highlight_cells(value)
+                column_styles.append(cell_style)
+            styles.append(column_styles)
 
-        # Crear una figura de Plotly con la tabla
+        # Crear la figura de Plotly con la tabla
         fig = go.Figure(data=[go.Table(
-            header=dict(values=list(df_copy.columns)),
-            cells=dict(values=[df_copy[col] for col in df_copy.columns],
-                    fill=dict(color=cell_styles))
-        )])
-
-        # Ajustar el tamaño de las celdas
-        fig.update_layout(
-            autosize=True,
-            height=200,  # Ajustar el alto de la tabla
-            width=500    # Ajustar el ancho de la tabla
-        )
+            header=dict(values=list(df.columns)),
+            cells=dict(values=[df[column] for column in df.columns],
+                    fill=dict(color=[column_styles[column_index][row_index]['fill']['color']
+                                        for column_index, row_index in
+                                        [(column_index, row_index) for column_index in range(len(df.columns))
+                                        for row_index in range(len(df[column]))]]),
+                    font=dict(color=[column_styles[column_index][row_index]['font']['color']
+                                        for column_index, row_index in
+                                        [(column_index, row_index) for column_index in range(len(df.columns))
+                                        for row_index in range(len(df[column]))]])))
+        ])
 
         # Mostrar la figura en Streamlit
         st.plotly_chart(fig)
