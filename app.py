@@ -337,8 +337,7 @@ if boton1:
                 else:
                     return {'fill': {'color': 'white'}, 'font': {'color': 'chocolate'}}
 
-            # Crear una lista de diccionarios con los estilos para cada celda
-
+        # Crear una lista de diccionarios con los estilos para cada celda
         styles = []
         for column in df.columns:
             column_styles = []
@@ -352,7 +351,7 @@ if boton1:
         for i, column in enumerate(df.columns):
             column_data = []
             for j, value in enumerate(df[column]):
-                cell_data = value
+                cell_data = {'content': value}
                 cell_style = styles[i][j]
                 cell_data.update(cell_style)
                 column_data.append(cell_data)
