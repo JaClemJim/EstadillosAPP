@@ -307,70 +307,70 @@ if boton1:
                 df_copy[col] = df_copy[col].astype(str)
 
         
-        # # Definir una función para aplicar estilos personalizados a las celdas
-        # def highlight_cells(value):
-        #     style = 'background-color: green; color: white' if value == 'T' else ''
-        #     return style
-
-        # # Aplicar estilos personalizados al DataFrame
-        # styled_df = df.style.apply(lambda row: highlight_cells(row), axis=1)
-
-        # # Mostrar el DataFrame en Streamlit
-        # st.dataframe(styled_df)
-
-        # # Definir una función para aplicar estilos personalizados a las celdas
-        # def highlight_cells(value):
-        #     style = ['background-color: green; color: white' if v == 'T' else '' for v in value]
-        #     return style
-
-        # # Aplicar estilos personalizados al DataFrame
-        # styled_df = df_copy.style.apply(highlight_cells, axis=0)
-
-        # # Mostrar el DataFrame en Streamlit
-        # st.dataframe(styled_df)
-
-        import plotly.graph_objects as go
-
+        # Definir una función para aplicar estilos personalizados a las celdas
         def highlight_cells(value):
-                if value == 'T':
-                    return {'fill': {'color': 'green'}, 'font': {'color': 'white'}}
-                else:
-                    return {'fill': {'color': 'white'}, 'font': {'color': 'chocolate'}}
+            style = 'background-color: green; color: white' if value == 'T' else ''
+            return style
 
-        # Crear una lista de diccionarios con los estilos para cada celda
-        styles = []
-        for column in df_copy.columns:
-            column_styles = []
-            for value in df_copy[column]:
-                cell_style = highlight_cells(value)
-                column_styles.append(cell_style)
-            styles.append(column_styles)
+        # Aplicar estilos personalizados al DataFrame
+        styled_df = df.style.apply(lambda row: highlight_cells(row), axis=1)
 
-        # Crear la figura de Plotly con la tabla
-        table_data = []
-        for i, column in enumerate(df_copy.columns):
-            column_data = []
-            for j, value in enumerate(df_copy[column]):
-                cell_data = {'content': value}
-                cell_style = styles[i][j]
-                cell_data.update(cell_style)
-                column_data.append(cell_data)
-            table_data.append(column_data)
+        # Mostrar el DataFrame en Streamlit
+        st.dataframe(styled_df)
 
-        fig = go.Figure(data=[go.Table(
-            header=dict(values=list(df_copy.columns)),
-            cells=dict(values=table_data)
-        )])
+        # Definir una función para aplicar estilos personalizados a las celdas
+        def highlight_cells(value):
+            style = ['background-color: green; color: white' if v == 'T' else '' for v in value]
+            return style
 
-        # Ajustar el tamaño de las celdas
-        fig.update_layout(
-            autosize=False,
-            width=10000,
-            height=10000
-        )
+        # Aplicar estilos personalizados al DataFrame
+        styled_df = df_copy.style.apply(highlight_cells, axis=0)
 
-        # Mostrar la figura en Streamlit
-        st.plotly_chart(fig)
+        # Mostrar el DataFrame en Streamlit
+        st.dataframe(styled_df)
+
+        # import plotly.graph_objects as go
+
+        # def highlight_cells(value):
+        #         if value == 'T':
+        #             return {'fill': {'color': 'green'}, 'font': {'color': 'white'}}
+        #         else:
+        #             return {'fill': {'color': 'white'}, 'font': {'color': 'chocolate'}}
+
+        # # Crear una lista de diccionarios con los estilos para cada celda
+        # styles = []
+        # for column in df_copy.columns:
+        #     column_styles = []
+        #     for value in df_copy[column]:
+        #         cell_style = highlight_cells(value)
+        #         column_styles.append(cell_style)
+        #     styles.append(column_styles)
+
+        # # Crear la figura de Plotly con la tabla
+        # table_data = []
+        # for i, column in enumerate(df_copy.columns):
+        #     column_data = []
+        #     for j, value in enumerate(df_copy[column]):
+        #         cell_data = {'content': value}
+        #         cell_style = styles[i][j]
+        #         cell_data.update(cell_style)
+        #         column_data.append(cell_data)
+        #     table_data.append(column_data)
+
+        # fig = go.Figure(data=[go.Table(
+        #     header=dict(values=list(df_copy.columns)),
+        #     cells=dict(values=table_data)
+        # )])
+
+        # # Ajustar el tamaño de las celdas
+        # fig.update_layout(
+        #     autosize=False,
+        #     width=10000,
+        #     height=10000
+        # )
+
+        # # Mostrar la figura en Streamlit
+        # st.plotly_chart(fig)
 
         #generar excel
         transf(df, df3, aerop)
