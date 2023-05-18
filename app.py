@@ -365,8 +365,8 @@ if boton1:
         # Ajustar el tamaño de las celdas
         fig.update_layout(
             autosize=False,
-            width=3000,
-            height=5000
+            width=10000,
+            height=10000
         )
 
         # Mostrar la figura en Streamlit
