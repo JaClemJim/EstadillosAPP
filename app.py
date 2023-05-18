@@ -285,8 +285,8 @@ if boton1:
         h_ini = load_turnos("datosDependencias1.csv", aerop, turno)
         lista_horas = generar_lista_hora(h_ini, len(titulos))
 
-        print(lista_horas, len(lista_horas))
-        print(titulos, len(titulos))
+        # print(lista_horas, len(lista_horas))
+        # print(titulos, len(titulos))
 
         new_columns = ["ATCOS", "Tiempo", "Porcentaje"] + lista_horas
 
@@ -318,29 +318,50 @@ if boton1:
         # # Mostrar el DataFrame en Streamlit
         # st.dataframe(styled_df)
 
+        # # Definir una función para aplicar estilos personalizados a las celdas
+        # def highlight_cells(value):
+        #     style = ['background-color: green; color: white' if v == 'T' else '' for v in value]
+        #     return style
+
+        # # Aplicar estilos personalizados al DataFrame
+        # styled_df = df_copy.style.apply(highlight_cells, axis=0)
+
+        # # Mostrar el DataFrame en Streamlit
+        # st.dataframe(styled_df)
+
+        import plotly.graph_objects as go
+
         # Definir una función para aplicar estilos personalizados a las celdas
         def highlight_cells(value):
-            style = ['background-color: green; color: white' if v == 'T' else '' for v in value]
-            return style
+            if value == 'T':
+                return {'backgroundColor': 'green', 'color': 'white'}
+            else:
+                return {}
 
-        # Aplicar estilos personalizados al DataFrame
-        styled_df = df_copy.style.apply(highlight_cells, axis=0)
+        # Crear una lista de diccionarios con los estilos para cada celda
+        cell_styles = []
+        for column in df_copy.columns:
+            column_styles = []
+            for value in df_copy[column]:
+                column_styles.append(highlight_cells(value))
+            cell_styles.append(column_styles)
 
+        # Crear una figura de Plotly con la tabla
+        fig = go.Figure(data=[go.Table(
+            header=dict(values=list(df_copy.columns)),
+            cells=dict(values=[df_copy[col] for col in df_copy.columns],
+                    fill=dict(color=cell_styles))
+        )])
 
-        # Definir el estilo CSS personalizado para ajustar el tamaño de las celdas
-        custom_css = """
-        <style>
-        .dataframe td, .dataframe th {
-            padding: 1px;
-        }
-        </style>
-        """
+        # Ajustar el tamaño de las celdas
+        fig.update_layout(
+            autosize=True,
+            height=200,  # Ajustar el alto de la tabla
+            width=500    # Ajustar el ancho de la tabla
+        )
 
-        # Mostrar el DataFrame en Streamlit con el estilo CSS personalizado
-        st.markdown(custom_css, unsafe_allow_html=True)
-
-        # Mostrar el DataFrame en Streamlit
-        st.dataframe(styled_df)
+        # Mostrar la figura en Streamlit
+        st.plotly_chart(fig)
 
         #generar excel
         transf(df, df3, aerop)
