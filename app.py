@@ -339,18 +339,18 @@ if boton1:
 
         # Crear una lista de diccionarios con los estilos para cada celda
         styles = []
-        for column in df.columns:
+        for column in df_copy.columns:
             column_styles = []
-            for value in df[column]:
+            for value in df_copy[column]:
                 cell_style = highlight_cells(value)
                 column_styles.append(cell_style)
             styles.append(column_styles)
 
         # Crear la figura de Plotly con la tabla
         table_data = []
-        for i, column in enumerate(df.columns):
+        for i, column in enumerate(df_copy.columns):
             column_data = []
-            for j, value in enumerate(df[column]):
+            for j, value in enumerate(df_copy[column]):
                 cell_data = {'content': value}
                 cell_style = styles[i][j]
                 cell_data.update(cell_style)
@@ -358,9 +358,16 @@ if boton1:
             table_data.append(column_data)
 
         fig = go.Figure(data=[go.Table(
-            header=dict(values=list(df.columns)),
+            header=dict(values=list(df_copy.columns)),
             cells=dict(values=table_data)
         )])
+
+        # Ajustar el tamaño de las celdas
+        fig.update_layout(
+            autosize=True,
+            width=800,
+            height=400
+        )
 
         # Mostrar la figura en Streamlit
         st.plotly_chart(fig)
