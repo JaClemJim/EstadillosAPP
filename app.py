@@ -8,7 +8,7 @@ from openpyxl.utils.dataframe import dataframe_to_rows
 from openpyxl.utils.cell import get_column_letter
 from openpyxl.styles import PatternFill
 from openpyxl.formatting.rule import ColorScaleRule
-import datetime
+from datetime import datetime, timedelta
 import warnings
 import myInputCRs
 
@@ -53,9 +53,24 @@ def load_turnos(datos, ad, t_id):
 
     inicio = float(h_3[0][t_id])
 
-    fin = float(h_3[0][t_id+1])
+    return inicio
 
-    return inicio, fin
+def decimal_to_time(decimal_hour):
+    hours = int(decimal_hour)
+    minutes = int((decimal_hour - hours) * 60)
+    time = datetime(1, 1, 1, hours, minutes)
+    return time.strftime("%H:%M")
+
+def generar_lista_hora(hora_inicial, num_columnas):
+    hora_inicio = decimal_to_time(hora_inicial)
+    hora_actual = datetime.strptime(hora_inicio, '%H:%M')
+    lista_hora = ["H Inicio " + hora_inicio]
+
+    for _ in range(num_columnas - 1):
+        hora_actual += timedelta(minutes=5)
+        lista_hora.append("H Inicio " + hora_actual.strftime('%H:%M'))
+
+    return lista_hora
 
 #####
 # Transformar dataframe en excel descargable. 
@@ -265,19 +280,28 @@ if boton1:
 
         df_copy = df.copy()
 
-        new_columns = []
-        for col in df_copy.columns:
-            if isinstance(col, int) and col != 0:
-                new_columns.append("Bloque nº " + str(col))
-            elif col == 0:
-                new_columns.append("ATCO")
-            else:
-                new_columns.append(col)
+        titulos = df_copy.columns
+        titulos[0] = "ATCOS"
+
+        h_ini = load_turnos("datosDependencias1.csv", aerop, turno)
+        lista_horas = generar_lista_hora(h_ini, len(titulos))
+
+        new_columns = titulos[:3] + lista_horas
+
+
+        # new_columns = []
+        # for col in df_copy.columns:
+        #     if isinstance(col, int) and col != 0:
+        #         new_columns.append("Bloque nº " + str(col))
+        #     elif col == 0:
+        #         new_columns.append("ATCO")
+        #     else:
+        #         new_columns.append(col)
         
         df_copy.columns = new_columns
 
         for col in df_copy.columns:
-            if "Bloque nº" in col:
+            if "H inicio" in col:
                 df_copy[col] = df_copy[col].astype(str)
 
         
