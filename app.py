@@ -307,16 +307,16 @@ if boton1:
                 df_copy[col] = df_copy[col].astype(str)
 
         
-        # Definir una función para aplicar estilos personalizados a las celdas
-        def highlight_cells(value):
-            style = 'background-color: green; color: white' if value == 'T' else ''
-            return style
+        # # Definir una función para aplicar estilos personalizados a las celdas
+        # def highlight_cells(value):
+        #     style = 'background-color: green; color: white' if value == 'T' else ''
+        #     return style
 
-        # Aplicar estilos personalizados al DataFrame
-        styled_df = df.style.apply(lambda row: highlight_cells(row), axis=1)
+        # # Aplicar estilos personalizados al DataFrame
+        # styled_df = df.style.apply(lambda row: highlight_cells(row), axis=1)
 
-        # Mostrar el DataFrame en Streamlit
-        st.dataframe(styled_df)
+        # # Mostrar el DataFrame en Streamlit
+        # st.dataframe(styled_df)
 
         # Definir una función para aplicar estilos personalizados a las celdas
         def highlight_cells(value):
