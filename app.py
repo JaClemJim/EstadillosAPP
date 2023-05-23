@@ -162,7 +162,7 @@ dia = st.date_input("fecha (por defecto, hoy)")
 
 
 list_input = [aerop, atcos, turno, bloque, demanda, dia] #lista que sirve para alimentar a la fucnión que genera los estadillos
-st.write(list_input)
+# st.write(list_input)
 
 ######
 # demanda por hora para lista manipulable
