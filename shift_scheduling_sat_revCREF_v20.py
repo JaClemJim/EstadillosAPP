@@ -668,6 +668,8 @@ def solve_shift_scheduling(lista, traf=[]):
                     if ("shift_constraint" in var.Name() and
                         "shift 0" in var.Name()):
                             incumplebloque_descansominimo=True
+                            msg7 = "No se cumplen las condiciones de tiempos de descanso y trabajo"
+                            return msg7
                     print('  %s violated, penalty=%i' % (var.Name(), penalty))
                 else:
                     print('  %s fulfilled, gain=%i' % (var.Name(), -penalty))

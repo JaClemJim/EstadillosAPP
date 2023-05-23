@@ -155,13 +155,14 @@ def transf(tabla, tabla2, aeropuerto):
 aerop = st.text_input("código OACI")
 atcos = st.number_input('Número de ATCOS disponibles para el turno', min_value=1, step=1)
 turno = st.selectbox('0 -> Mañana, 1 -> tarde, 2 -> noche', [0,1,2])
-bloque = st.number_input('Bloque de tiempo para dividir la hora', min_value=5, max_value= 60, step=5)
+# bloque = st.number_input('Bloque de tiempo para dividir la hora', min_value=5, max_value= 60, step=5)
+bloque = 5
 demanda = st.number_input('Bloque de tiempo para captar la demanda', min_value=5, max_value = 60, step=5)
 dia = st.date_input("fecha (por defecto, hoy)")
 
 
 list_input = [aerop, atcos, turno, bloque, demanda, dia] #lista que sirve para alimentar a la fucnión que genera los estadillos
-# st.write(list_input)
+st.write(list_input)
 
 ######
 # demanda por hora para lista manipulable
@@ -205,6 +206,9 @@ if boton1:
         resultado = sol[0]
         mensaje = sol[1]
 
+        # st.write(resultado)
+        # st.write(mensaje)
+
         if len(mensaje) !=0:
             st.write(mensaje[0])
 
@@ -215,10 +219,15 @@ if boton1:
         dfs = [pd.DataFrame(line.split(',')).transpose() for line in resultado]
         df = pd.concat(dfs).reset_index(drop=True).iloc[:, 0:-1]
 
+        # st.dataframe(df)
+
         grupo = int(time/t_bloque)
 
         lista1 = [i for i in list(filter(lambda x: x != ' ', df.iloc[0,1:])) for j in range(grupo)]
         lista2 = [i for i in list(filter(lambda x: x != ' ', df.iloc[1,1:])) for j in range(grupo)]
+
+        # st.write(lista1)
+        # st.write(lista2)
 
         if len(lista1) > (df.shape[1] - 1):
             a = len(lista1) - (df.shape[1] - 1)
