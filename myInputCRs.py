@@ -105,15 +105,16 @@ class MyEscenario:
         dfflotante0=self.dfTrafico.loc[myfiltro,
                                   ['HORA_LOCAL','HORA_LOCAL_DEC','TOTALES']].reset_index(drop=True)
                 
-        print(dfflotante0, "LINEA 108")
+        # print(dfflotante0, "LINEA 108")
 
         if TRAF != []:
             new_demand = pd.DataFrame(TRAF).astype('float')
             # print(new_demand,  "despues de hacerlo dataframe")
             # print(new_dfflotante['TOTALES_FLOTANTE'], type(new_dfflotante['TOTALES_FLOTANTE']))
-            dfflotante0['TOTALES']  = new_demand.iloc[:,0] 
+            new_demand.index = list(range(1,9))
+            dfflotante0.loc[1:8, 'TOTALES']  = new_demand.iloc[:,0] 
 
-            print(dfflotante0, "DENTRO DEL IF, DESPUES DEL CAMBIO")
+            # print(dfflotante0, "DENTRO DEL IF, DESPUES DEL CAMBIO")
 
         
         frames=[dfflotante0]       
@@ -147,7 +148,7 @@ class MyEscenario:
 
         # merge performs an INNER JOIN by default
 
-        print(dfflotante, 'ANTES DEL FILTRO')
+        # print(dfflotante, 'ANTES DEL FILTRO')
 
         new_dfflotante = dfflotante.loc[myfiltro,
                                   ['HORA_LOCAL','HORA_LOCAL_DEC','TOTALES', 'TOTALES_FLOTANTE']].reset_index(drop=True)
@@ -157,8 +158,8 @@ class MyEscenario:
                             how='left')
         print(new_dfflotante_2, "despues del merge")       
         
-#        print('hini',hini,'hfin',hfin)
-#        print('dfflotante', dfflotante)
+        # print('hini',hini,'hfin',hfin)
+        # print('dfflotante', dfflotante)
         listademanda=list(new_dfflotante_2['TOTALES_FLOTANTE'].to_numpy())
         listaposiciones=list(new_dfflotante_2['POS'].to_numpy())
         return listademanda,listaposiciones

@@ -17,15 +17,15 @@ class MyConfig:
             inputdata = json.load(f)
 
     # Data
-        self.num_employees=inputdata["num_employees"] # 3
+        # self.num_employees=inputdata["num_employees"] # 3
         self.num_hours=inputdata["num_hours"] # si 0 lee el turno
-        self.name_AD=inputdata["name_AD"] # "LEMD_DCL"
-        self.id_shift=inputdata ["id_shift"] # 0
-        self.num_day=inputdata["num_day"] # 15 
-        self.num_month=inputdata["num_month"] #7
+        # self.name_AD=inputdata["name_AD"] # "LEMD_DCL"
+        # self.id_shift=inputdata ["id_shift"] # 0
+        # self.num_day=inputdata["num_day"] # 15 
+        # self.num_month=inputdata["num_month"] #7
         self.fileTrafico=inputdata["fileTrafico"] # "datosTrafico_LEMD_DCL_2021.csv"
         self.fileTWR=inputdata["fileTWR"] # "datosDependencias1.csv"
-        self.block_length=inputdata["block_length"] # 5  minutes
+        # self.block_length=inputdata["block_length"] # 5  minutes
         
         self.shifts = inputdata["shifts"] # ['O', 'F', 'b'] # off, FRQ, Brief
         

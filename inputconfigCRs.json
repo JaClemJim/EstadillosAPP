@@ -9,7 +9,7 @@
     "num_day":1,
     "num_month":7,
     
-    "block_length": 5,
+    "block_length_": 5,
     "shifts": ["D", "T"],
     "label_hours":["00 15 30 45 "],
     "fixed_assignments": [

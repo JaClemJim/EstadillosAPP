@@ -245,7 +245,7 @@ def solve_shift_scheduling(lista, traf=[]):
         # demanda por 60' a bloques de 5'
         print('hourly_cover_demands not empty')
         for x in mC.hourly_cover_demands:
-            for y in range(math.ceil(demand_interval_length/mC.block_length)):
+            for y in range(math.ceil(demand_interval_length/block_length)):
                 listaposiciones.append(int(x[0]))
     else:
         # demand_interval_length=15' p.ej
@@ -608,7 +608,7 @@ def solve_shift_scheduling(lista, traf=[]):
     # Sets a time limit of XX seconds.
     solver.parameters.max_time_in_seconds = max_time_in_seconds
     # Specify the number of parallel workers to use during search.
-    solver.parameters.num_search_workers = num_employees #8
+    solver.parameters.num_search_workers = num_employees 
     
 
     solution_printer = cp_model.ObjectiveSolutionPrinter()
@@ -668,9 +668,9 @@ def solve_shift_scheduling(lista, traf=[]):
                     if ("shift_constraint" in var.Name() and
                         "shift 0" in var.Name()):
                             incumplebloque_descansominimo=True
-                            msg7 = "No se cumplen las condiciones de tiempos de descanso y trabajo"
-                            return msg7
-                    print('  %s violated, penalty=%i' % (var.Name(), penalty))
+                            # msg7 = "No se cumplen las condiciones de tiempos de descanso y trabajo"
+                            # return msg7
+                            print('  %s violated, penalty=%i' % (var.Name(), penalty))
                 else:
                     print('  %s fulfilled, gain=%i' % (var.Name(), -penalty))
         
