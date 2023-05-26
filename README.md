@@ -6,4 +6,4 @@
 
 **Conflictos de compatibilidad entre versiones de librerías**: 
 
-Las librerías stramlit y ortools necesitan cada una versión diferente de protobuf. Se solucionan dejando a pip que encuentre compatibilidades de manera automática. Esto provoca que si se ejecuta en un puerto local o en la nube de streamlit, ciertas funciones usadas generen fallos. 
+Las librerías stramlit y ortools necesitan cada una versión diferente de protobuf. Se solucionan dejando a pip que encuentre compatibilidades de manera automática. Esto provoca que si se ejecuta en un puerto local o en la nube de streamlit, ciertas funciones usadas generen fallos.
